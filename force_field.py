@@ -24,12 +24,17 @@ class forcefield:
         u = 0.0
         for (sx, sy), sq in zip(self.src, self.w):
             r = np.sqrt((sx - x)**2 + (sy - y)**2 + 1e-8)
-            u += sq * np.exp(-0.5 * r) / r
+            u += -sq * np.exp(-5.0 * r**2)
         return u
 
 
         
-src = { tuple(np.random.uniform(0.0, 10.0, 2)): np.random.uniform(50, 100) for i in range(10) }
+src = { 
+            (3.0, 3.0): 100.0, 
+            (7.0, 7.0): 100.0,
+            (3.0, 7.0): 100.0,
+            (7.0, 3.0): 100.0,
+      }
 f = forcefield(src)
 
 import matplotlib.pyplot as plt
