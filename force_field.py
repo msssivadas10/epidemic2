@@ -26,7 +26,7 @@ class forcefield:
         for (sx, sy), sq in zip(self.src, self.w):
             dx, dy = (sx - x), (sy - y)
             r = np.sqrt(dx*dx + dy*dy + 1e-8)
-            u = -sq * np.exp(-1.0 * r**2)
+            u = sq * np.exp(-1.0 * r**2)
 
             ux += u * dx / r
             uy += u * dy / r
@@ -128,7 +128,7 @@ fig, ax = plt.subplots(figsize=[8,8])
 for t in range(50):
     ax.cla()
 
-    ax.pcolor(x, y, u, cmap = 'Reds_r', alpha = 1.0)
+    ax.pcolor(x, y, u, cmap = 'Reds', alpha = 1.0)
     # ax.plot(f.src[:,0], f.src[:,1], 'o', ms = 3, color = 'black')
 
     for p in c.people:
