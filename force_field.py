@@ -23,7 +23,8 @@ class forcefield:
         """
         u = 0.0
         for (sx, sy), sq in zip(self.src, self.w):
-            u += sq / np.sqrt((sx - x)**2 + (sy - y)**2 + 1e-8)
+            r = np.sqrt((sx - x)**2 + (sy - y)**2 + 1e-8)
+            u += sq * np.exp(-0.5 * r) / r
         return u
 
 
