@@ -22,11 +22,15 @@ class forcefield:
         """ 
         Potential field at a point.
         """
-        u = 0.0
+        ux, uy = 0.0, 0.0
         for (sx, sy), sq in zip(self.src, self.w):
-            r = np.sqrt((sx - x)**2 + (sy - y)**2 + 1e-8)
-            u += -sq * np.exp(-20.0 * r**2)
-        return u
+            dx, dy = (sx - x), (sy - y)
+            r = np.sqrt(dx*dx + dy*dy + 1e-8)
+            u = -sq * np.exp(-1.0 * r**2)
+
+            ux += u * dx / r
+            uy += u * dy / r
+        return ux, uy
 
 class agent:
     """
@@ -48,8 +52,22 @@ class agent:
         """ 
         move the agent.
         """
-        self.x += self.vx * dt 
-        self.y += self.vy * dt
+        self.x += self.vx * dt / 2.0
+        self.y += self.vy * dt / 2.0
+
+        if self.lim:
+            self.x = self.x % self.lim
+            self.y = self.y % self.lim
+
+        ax, ay = 0.0, 0.0
+        if self.field:
+            ax, ay = self.field.field(self.x, self.y)
+
+        self.vx += ax * dt
+        self.vy += ay * dt
+
+        self.x += self.vx * dt / 2.0
+        self.y += self.vy * dt / 2.0
 
         if self.lim:
             self.x = self.x % self.lim
@@ -80,6 +98,10 @@ class community:
         for p in self.people:
             p.move(dt)
 
+    def setfield(self, field: forcefield) -> None:
+        for p in self.people:
+            p.setfield(field)
+
 
 
 
@@ -92,19 +114,21 @@ src = {
       }
 f = forcefield(src)
 c = community(50, 10.0)
+c.setfield(f)
 
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
 x, y = np.mgrid[0:10:201j, 0:10:201j]
-u = f.field(x, y)
+ux, uy = f.field(x, y)
+u = np.sqrt(ux**2 + uy**2)
 
 fig, ax = plt.subplots(figsize=[8,8])
 
 for t in range(50):
     ax.cla()
 
-    # ax.pcolor(x, y, u, cmap = 'Reds_r', alpha = 1.0)
+    ax.pcolor(x, y, u, cmap = 'Reds_r', alpha = 1.0)
     # ax.plot(f.src[:,0], f.src[:,1], 'o', ms = 3, color = 'black')
 
     for p in c.people:
