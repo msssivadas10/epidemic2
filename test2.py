@@ -14,6 +14,7 @@ class community:
         self.dt      = dt                  # time step for integration
         
         self.fcentre    = np.array([0.0, 0.0]) # centre of the force field
+        self.vcenter    = np.array([0.0, 0.0]) # velocity of the force field
         self.f0, self.w = 0.0, 0.0             # force parameters
         self.soft     = 0.1                    # softening value
 
@@ -40,10 +41,10 @@ class community:
         self.gridify()
 
         self.cforce_on   = False
-        self.aforce_on   = True
+        self.aforce_on   = False
         self.has_disease = False
 
-    def config_cforce(self, f0: float = ... , w: float = ..., centre: tuple = ...) -> None:
+    def config_cforce(self, f0: float = ... , w: float = ..., centre: tuple = ..., vcentre: tuple = ..., ) -> None:
         """ create a central force field """
         if centre is not ... :
             self.fcentre = self.lim * np.asarray(centre)
@@ -51,6 +52,8 @@ class community:
             self.f0      = f0
         if w is not ... :
             self.w       = w
+        if vcentre is not  ... :
+            self.vcenter = np.asarray(vcentre)
 
     def config_aforce(self, e0: float = ... , r0: float = ... ) -> None:
         """ configure agent force """
@@ -93,11 +96,25 @@ class community:
         # put reflection boundary conditions
         mask            = (self.pos  < 0) # crossing the left/bottom boundary
         self.pos[mask]  = 0
-        self.vel[mask] *= -0.5
+        self.vel[mask] *= -0.8
 
         mask            = (self.pos > self.lim) # crossing the right/top boundary
         self.pos[mask]  = self.lim
-        self.vel[mask] *= -0.5
+        self.vel[mask] *= -0.8
+
+        # move force field
+        if sum(self.vcenter**2) > 1e-8:
+            self.fcentre = self.fcentre + self.vcenter * self.dt
+
+             # put reflection boundary conditions
+            mask            = (self.fcentre  < 0) # crossing the left/bottom boundary
+            self.fcentre[mask]  = 0
+            self.vcenter[mask] *= -1.0
+
+            mask            = (self.fcentre > self.lim) # crossing the right/top boundary
+            self.fcentre[mask]  = self.lim
+            self.vcenter[mask] *= -1.0
+
 
         self.gridify() # re-grid
 
@@ -128,7 +145,7 @@ class community:
             mask         = (r > 1e-8)
             near, r, sep = near[mask], r[mask], sep[mask,:]
 
-            acc_ = - self.e0 * np.exp(-(r / self.r0)**2) / r
+            acc_ = -self.e0 * np.exp(-(r / self.r0)**2) / r
             acc[near, :] += acc_[:, None] * sep 
         return acc
 
@@ -233,9 +250,10 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 plt.style.use('ggplot')
 
-com = community(n = 500)
-com.config_cforce(f0 = 10.0, w = 0.05, centre = [0.5, 0.5])
-com.config_aforce(r0 = 0.1, e0 = 1)
+com = community(n = 2500, v0 = 1)
+com.config_cforce(f0 = 10.0, w = 0.05, centre = [0.5, 0.5])#, vcentre = [1.0, 1.0])
+com.config_aforce(r0 = 0.1, e0 = 1e-2)
+com.config_disease(pinf = 0.2, trec = 10)
 
 com.infect_random()
 com.switch_central_force(1)
@@ -246,10 +264,11 @@ fig, ax = plt.subplots(figsize = [10,10])
 ax.axis([-5, com.lim+5, -5, com.lim+5])
 
 colours = np.array(['#000000', '#ff0000', '#0000ff'])
-for i in range(1000):
+# for i in range(1000):
+while len(np.where(com.state == 1)[0]) > 0:
     ax.cla()
     col = colours[com.state]
-    ax.scatter(com.pos[:,0], com.pos[:,1], s = 7, c = col)
+    ax.scatter(com.pos[:,0], com.pos[:,1], s = 5, c = col)
 
     # ax.scatter(com.pos[:,0], com.pos[:,1], s = 5, c = 'black')
 
