@@ -250,16 +250,15 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 plt.style.use('ggplot')
 
-<<<<<<< HEAD
+# <<<<<<< HEAD
 com = community(n = 100)
 com.config_cforce(f0 = 10.0, w = 0.05, centre = [0.5, 0.5])
 com.config_aforce(r0 = 0.1, e0 = 1)
-=======
+# =======
 com = community(n = 2500, v0 = 1)
 com.config_cforce(f0 = 10.0, w = 0.05, centre = [0.5, 0.5])#, vcentre = [1.0, 1.0])
 com.config_aforce(r0 = 0.1, e0 = 1e-2)
 com.config_disease(pinf = 0.2, trec = 10)
->>>>>>> 15cb2d8a23f0850748995a6173fcdcd4ee6c730f
 
 com.infect_random()
 # com.switch_central_force(1)
