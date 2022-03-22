@@ -233,13 +233,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 plt.style.use('ggplot')
 
-com = community(n = 500)
+com = community(n = 100)
 com.config_cforce(f0 = 10.0, w = 0.05, centre = [0.5, 0.5])
 com.config_aforce(r0 = 0.1, e0 = 1)
 
 com.infect_random()
-com.switch_central_force(1)
-com.switch_agent_force(0)
+# com.switch_central_force(1)
+com.switch_agent_force(1)
 
 
 fig, ax = plt.subplots(figsize = [10,10])
