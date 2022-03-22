@@ -170,23 +170,27 @@ pi, ri, T  = 0.1, 0.05 * scale, 50 * dt
 # t, sir = simulation(scale, n, dt, subdiv, f0, fc, fv, pi, ri, T)
 # sir = np.array(sir)
 
-f0s = np.linspace(0.0, 0.5, 21)
-tm, im = [], []
-for ri in f0s:
-    ri = ri * scale
-    _tm, _im = mean_peakinf(100, scale, n, dt, subdiv, f0, fc, fv, pi, ri, T)
-    tm.append(_tm)
-    im.append(_im)
-
-colours = np.array(['black', 'C0', 'gray'])
-
-
 fig, ax = plt.subplots(figsize=[6,6])
+
+
+rs = np.linspace(0.0, 0.5, 11)
+for f0 in np.linspace(0, 100, 5):
+    tm, im = [], []
+    for ri in rs:
+        ri = ri * scale
+        _tm, _im = mean_peakinf(5, scale, n, dt, subdiv, f0, fc, fv, pi, ri, T)
+        tm.append(_tm)
+        im.append(_im)
+    ax.plot(rs, im, 'o-', ms = 3, label = f"{f0:.3f}")
+ax.legend()
+# colours = np.array(['black', 'C0', 'gray'])
+
+
 # ax.plot(t, sir[:,0], color = colours[0])
 # ax.plot(t, sir[:,1], color = colours[1])
 # ax.plot(t, sir[:,2], color = colours[2])
 
-ax.plot(f0s, im, 'o-')
+# ax.plot(f0s, im, 'o-')
 # ax.plot(f0s, tm, 'o-')
 
 
