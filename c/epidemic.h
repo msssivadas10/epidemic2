@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include "mt19937.h"
 
 #define min(x, y) ((x) < (y) ? (x) : (y))
 #define max(x, y) ((x) < (y) : (y) : (x))
@@ -52,8 +53,37 @@ void getNearest(struct Particles *rw, float x, float y, float r, int *nid, int *
 /* Get the counts at present instant. */
 void getCurrentCounts(struct Particles *rw, struct Stats *stats);
 
-/* Run a (normal) simulation once */
-void simulation(struct Stats *stats);
+/* Get the acceleration of the particles. */
+void getAcceleration(struct Particles *rw, float *ax, float *ay);
 
+/* Run a (normal) simulation once */
+void __simulation(struct Stats *stats);
+
+/* Setup the simulation parameters (constants). */
+void setupSimulation(int __npart, float __boxsize, int __nsteps, int __subdiv, float __dt);
+
+/* Set value for infection radius. Value must be in units of boxsize */
+void setInfectionRadius(float __ri);
+
+/* Set the infection probability. */
+void setInfectionProbability(float __pi);
+
+/* Set recovery time (in steps). */
+void setRecoveryTime(int __Trec);
+
+/* Set the force strength (positive for attractive, negative for repulsive). */
+void setForceStrength(float __value);
+
+/* Set the speed of the force field. */
+void setForceSpeed(float __value);
+
+/* Set the radius parameter for the force field. */
+void setForceRadius(float __value);
+
+/* Lock the force field in position. */
+void lockForce(int __value);
+
+/* Switch the force field on or off. */
+void switchForce(int __value);
 
 #endif // EPIDEMIC_H
