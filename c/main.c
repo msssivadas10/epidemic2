@@ -2,18 +2,24 @@
 #include <stdlib.h>
 #include "epidemic.h"
 
-int npart;
-float boxsize;
-int Trec;
-float pi;
-float ri;
-int nsteps;
-int repeat;
-int subdiv;
-float dt;
-
-void simulation()
+/* Simulate the particles system to get averaged statistics */
+void simulation1(int nsteps, int repeat, float ri, float pi, int Trec, float fstr, float fvel)
 {
+    setInfectionRadius(ri);
+    setInfectionProbability(pi);
+    setRecoveryTime(Trec);
+
+    if (fabsf(fstr) < 1e-08)
+    {
+        switchForce(0);
+    }
+    else
+    {
+        switchForce(1);
+        setForceStrength(fstr);
+        setForceSpeed(fvel);
+    }
+
     struct Stats *stats;
     stats = (struct Stats*) malloc(nsteps * sizeof(struct Stats)); // store average stats 
 
@@ -54,8 +60,24 @@ void simulation()
     fclose(file);
 }
 
+/* Simulation to find maximum infection as function of force strength and infection radius. */
+void simulation2()
+{
+    ;
+}
+
 int main()
 {
+
+    int npart;
+    float boxsize;
+    int Trec;
+    float pi;
+    float ri;
+    int nsteps;
+    int repeat;
+    int subdiv;
+    float dt;
 
     npart   = 500;
     boxsize = 10.0;
@@ -68,13 +90,7 @@ int main()
     dt      = 0.1;
 
     setupSimulation(npart, boxsize, nsteps, subdiv, dt);
-
-    setInfectionRadius(ri);
-    setInfectionProbability(pi);
-    setRecoveryTime(Trec);
-    switchForce(0);
-
-    simulation();
+    simulation1(nsteps, repeat, ri, pi, Trec, 100.0, 0.0);
 
     return 0;
 }

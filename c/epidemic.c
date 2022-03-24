@@ -68,6 +68,7 @@ void initialiseParticles(struct Particles *rw)
     }
 
     rw->instant = 0;
+    rw->npart   = npart;
 
     // make a grid and place the particles on it
     ncells   = subdiv * subdiv;
@@ -220,6 +221,7 @@ void updateParticles(struct Particles *rw)
         if (forceOn)
         {
             // force is on: update velocity
+
             rw->vx[k] += ax[k] * dt;
             rw->vy[k] += ay[k] * dt;
         }

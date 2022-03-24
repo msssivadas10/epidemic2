@@ -19,6 +19,7 @@ struct Particles
 {
     /* data */
     int instant;    // time instant: time = instant * dt
+    int npart;      // number of particles
     float *x, *y;   // positions
     float *vx, *vy; // velocities
     status *state;  // infection state 
@@ -29,7 +30,7 @@ struct Particles
 /* Store the state at an instant */
 struct Stats
 {
-    float s, i, r; // number of exposed, infected and recovered
+    float s, i, r;  // number of exposed, infected and recovered
 };
 
 /* Initialise a particle system (random walkers). */
