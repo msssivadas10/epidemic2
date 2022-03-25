@@ -173,15 +173,15 @@ pi, ri, T  = 0.1, 0.05 * scale, 50 * dt
 fig, ax = plt.subplots(figsize=[6,6])
 
 
-rs = np.linspace(0.0, 0.5, 11)
+rs = np.linspace(0.0, 0.2, 101)
 for f0 in np.linspace(0, 100, 5):
     tm, im = [], []
     for ri in rs:
         ri = ri * scale
-        _tm, _im = mean_peakinf(5, scale, n, dt, subdiv, f0, fc, fv, pi, ri, T)
+        _tm, _im = mean_peakinf(500, scale, n, dt, subdiv, f0, fc, fv, pi, ri, T)
         tm.append(_tm)
         im.append(_im)
-    ax.plot(rs, im, 'o-', ms = 3, label = f"{f0:.3f}")
+    ax.plot(rs, im, 'o-', ms = 2, label = f"{f0:.3f}")
 ax.legend()
 # colours = np.array(['black', 'C0', 'gray'])
 

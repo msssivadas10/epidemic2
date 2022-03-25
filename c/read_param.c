@@ -2,26 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-int Nparticles;
-float Boxsize;
-int Nsteps;
-int RecoveryTime;
-float InfectionProbability;
-float InfectionRadius;
-int Repeat                 = 1;
-int Subdivisions           = 10;
-float TimeStep             = 0.1;
-float ForceStrength        = 0.0, 
-      ForceSpeed           = 0.0;
-int SimulationKey          = 1;
-float ForceStrengthStart   = 0.0, 
-      ForceStrengthStop    = 100.0;
-int ForceStrengthStep      = 21;
-float InfectionRadiusStart = 0.0, 
-      InfectionRadiusStop  = 0.2;
-int InfectionRadiusStep    = 21;
-char OutputDir[256];
+#include "simulation.h"
 
 char* strip(char *__str)
 {

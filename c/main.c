@@ -1,32 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "epidemic.h"
+#include "simulation.h"
+
+int Nparticles;
+float Boxsize;
+int Nsteps;
+int RecoveryTime;
+float InfectionProbability;
+float InfectionRadius;
+int Repeat                 = 1;
+int Subdivisions           = 10;
+float TimeStep             = 0.1;
+float ForceStrength        = 0.0, 
+      ForceSpeed           = 0.0;
+int SimulationKey          = 1;
+float ForceStrengthStart   = 0.0, 
+      ForceStrengthStop    = 100.0;
+int ForceStrengthStep      = 21;
+float InfectionRadiusStart = 0.0, 
+      InfectionRadiusStop  = 0.2;
+int InfectionRadiusStep    = 21;
+char OutputDir[256];
 
 /* Simulate the particles system to get averaged statistics */
-void simulation1(int nsteps, int repeat, float ri, float pi, int Trec, float fstr, float fvel)
+void simulation1(void)
 {
-    setInfectionRadius(ri);
-    setInfectionProbability(pi);
-    setRecoveryTime(Trec);
+    /* setup simulation */
+    setupSimulation(Nparticles, Boxsize, Nsteps, Subdivisions, TimeStep);
 
-    if (fabsf(fstr) < 1e-08)
+    setInfectionRadius(InfectionRadius);
+    setInfectionProbability(InfectionProbability);
+    setRecoveryTime(RecoveryTime);
+
+    if (fabsf(ForceStrength) < 1e-08)
     {
         switchForce(0);
     }
     else
     {
         switchForce(1);
-        setForceStrength(fstr);
-        setForceSpeed(fvel);
+        setForceStrength(ForceStrength);
+        setForceSpeed(ForceSpeed);
     }
 
     struct Stats *stats;
-    stats = (struct Stats*) malloc(nsteps * sizeof(struct Stats)); // store average stats 
+    stats = (struct Stats*) malloc(Nsteps * sizeof(struct Stats)); // store average stats 
 
-    for (int rep = 0; rep < repeat; rep++)
+    for (int rep = 0; rep < Repeat; rep++)
     {
         struct Stats *__stats;
-        __stats = (struct Stats*) malloc(nsteps * sizeof(struct Stats));
+        __stats = (struct Stats*) malloc(Nsteps * sizeof(struct Stats));
 
         __simulation(__stats);
 
@@ -38,7 +62,7 @@ void simulation1(int nsteps, int repeat, float ri, float pi, int Trec, float fst
         //     }
         // }
 
-        for (int j = 0; j < nsteps; j++)
+        for (int j = 0; j < Nsteps; j++)
         {
             stats[j].s += (__stats[j].s - stats[j].s) / (float) (rep + 1);
             stats[j].i += (__stats[j].i - stats[j].i) / (float) (rep + 1);
@@ -46,7 +70,7 @@ void simulation1(int nsteps, int repeat, float ri, float pi, int Trec, float fst
         }
     }
 
-    // write output to file
+    /* write output to file */
     FILE *file = fopen("output.txt", "w");
     if (file == NULL)
     {
@@ -54,7 +78,7 @@ void simulation1(int nsteps, int repeat, float ri, float pi, int Trec, float fst
         exit(0);
     }
 
-    for (int t = 0; t < nsteps; t++)
+    for (int t = 0; t < Nsteps; t++)
         fprintf(file, "%d\t%16.8f\t%16.8f\t%16.8f\n", t, stats[t].s, stats[t].i, stats[t].r);
     
     fclose(file);
@@ -68,29 +92,7 @@ void simulation2()
 
 int main()
 {
-
-    int npart;
-    float boxsize;
-    int Trec;
-    float pi;
-    float ri;
-    int nsteps;
-    int repeat;
-    int subdiv;
-    float dt;
-
-    npart   = 500;
-    boxsize = 10.0;
-    Trec    = 10;
-    pi      = 0.1;
-    ri      = 0.1;
-    nsteps  = 100;
-    repeat  = 10;
-    subdiv  = 10;
-    dt      = 0.1;
-
-    setupSimulation(npart, boxsize, nsteps, subdiv, dt);
-    simulation1(nsteps, repeat, ri, pi, Trec, 100.0, 0.0);
+    simulation1();
 
     return 0;
 }
